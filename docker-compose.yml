@@ -1,0 +1,31 @@
+# Deploy a PostgreSQL database with a default database called 'skating', 
+# a default user called 'skating' and a default password called 'skating'
+# The database is deployed locally on port 5432 and data is persisted in a local volume
+# Adminer can be used to manage the database
+
+version: "1.0"
+
+services:
+  db:
+    image: postgres
+    restart: always
+    container_name: skating-db
+    environment:
+      POSTGRES_DB: skating
+      POSTGRES_USER: skating
+      POSTGRES_PASSWORD: skating
+    ports:
+      - "5432:5432"
+    volumes:  
+      - ./skating-db-data:/var/lib/postgresql/data
+  
+  adminer:
+    image: adminer
+    restart: always
+    container_name: skating-adminer
+    ports:
+      - "8080:8080"
+
+volumes:
+  skating-db-data:
+    driver: local
