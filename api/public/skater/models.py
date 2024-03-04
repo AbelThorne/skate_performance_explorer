@@ -4,13 +4,13 @@ For each Competition a Skater participated to, a got a Performance. A Skater is
 also associated to a Club.
 """
 
-from datetime import date
-from typing import Optional
+from __future__ import annotations
+from typing import TYPE_CHECKING, Optional
 from sqlmodel import SQLModel, Field, Relationship
 
-from api.public.inscription.models import Inscription
 from api.public.club.models import Club
 from api.public.competition.models import Competition
+from api.public.inscription.models import Inscription
 
 
 class SkaterBase(SQLModel):
@@ -51,7 +51,6 @@ class SkaterUpdate(SQLModel):
     birth_date: str | None
     genre: str | None
     nation: str | None
-    club_id: int | None
-    club: Club | None
+    club: Optional["Club"]
     competition_inscriptions: list["Inscription"] | None
     competitions: list["Competition"] | None

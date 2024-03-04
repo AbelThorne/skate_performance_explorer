@@ -15,12 +15,26 @@ if TYPE_CHECKING:
 
 class InscriptionBase(SQLModel):
     category: str = Field(index=True)
+    skater_id: int = Field(foreign_key="skater.id")
+    competition_id: int = Field(foreign_key="competition.id")
 
 
 class Inscription(InscriptionBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    skater_id: int = Field(foreign_key="skater.id")
-    skater: "Skater" = Relationship(back_populates="skaters")
 
-    competition_id: int = Field(foreign_key="competition.id")
+    skater: "Skater" = Relationship(back_populates="skaters")
     competition: "Competition" = Relationship(back_populates="incription")
+
+
+class InscriptionCreate(InscriptionBase):
+    pass
+
+
+class InscriptionRead(InscriptionBase):
+    id: int
+
+
+class InscriptionUpdate(SQLModel):
+    category: str | None
+    skater: Optional["Skater"]
+    competition: Optional["Competition"]

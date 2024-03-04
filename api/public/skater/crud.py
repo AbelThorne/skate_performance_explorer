@@ -38,10 +38,8 @@ def update_skater(
             detail=f"Skater not found with id: {skater_id}",
         )
 
-    team_data = skater.model_dump(exclude_unset=True)
-    for key, value in team_data.items():
-        setattr(skater_to_update, key, value)
-
+    skater_data = skater.model_dump(exclude_unset=True)
+    skater_to_update.sqlmodel_update(skater_data)
     db.add(skater_to_update)
     db.commit()
     db.refresh(skater_to_update)

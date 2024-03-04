@@ -13,6 +13,8 @@ if TYPE_CHECKING:
 
 
 class PerformanceBase(SQLModel):
+    skater_id: int = Field(foreign_key="skater.id")
+    competition_id: int = Field(foreign_key="competition.id")
     category: str = Field(index=True)
     score: float
     rank: int
@@ -28,8 +30,30 @@ class PerformanceBase(SQLModel):
 
 class Performance(PerformanceBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    skater_id: int = Field(foreign_key="skater.id")
-    skater: "Skater" = Relationship(back_populates="performances")
 
-    competition_id: int = Field(foreign_key="competition.id")
+    skater: "Skater" = Relationship(back_populates="performances")
     competition: "Competition" = Relationship(back_populates="performances")
+
+
+class PerformanceCreate(PerformanceBase):
+    pass
+
+
+class PerformanceRead(PerformanceBase):
+    id: int
+
+
+class PerformanceUpdate(SQLModel):
+    skater: Optional["Skater"]
+    competition: Optional["Competition"]
+    category: str | None
+    score: float | None
+    rank: int | None
+    nb_entries: int | None
+    starting_number: int | None
+    total_segment_score: float | None
+    total_element_score: float | None
+    total_component_score: float | None
+    total_deductions: float | None
+    bonifications: float | None
+    program: str | None

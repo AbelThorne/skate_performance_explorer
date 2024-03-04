@@ -9,6 +9,7 @@ from api.public.skater.crud import (
     read_skaters,
     update_skater,
 )
+
 from api.public.skater.models import SkaterCreate, SkaterRead, SkaterUpdate
 
 router = APIRouter()
