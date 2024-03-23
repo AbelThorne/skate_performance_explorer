@@ -10,11 +10,8 @@ from api.public.performance.crud import (
     delete_performance,
 )
 
-from api.public.performance.models import (
-    PerformanceCreate,
-    PerformanceRead,
-    PerformanceUpdate,
-)
+from api.commons.shemas import *
+
 
 router = APIRouter()
 
@@ -40,15 +37,15 @@ def get_a_performance(performance_id: int, db: Session = Depends(get_session)):
     return read_performance(performance_id=performance_id, db=db)
 
 
-# @router.patch("/{performance_id}", response_model=PerformanceRead)
-# def update_a_performance(
-#     performance_id: int,
-#     performance: PerformanceUpdate,
-#     db: Session = Depends(get_session),
-# ):
-#     return update_performance(
-#         performance_id=performance_id, performance=performance, db=db
-#     )
+@router.patch("/{performance_id}", response_model=PerformanceRead)
+def update_a_performance(
+    performance_id: int,
+    performance: PerformanceUpdate,
+    db: Session = Depends(get_session),
+):
+    return update_performance(
+        performance_id=performance_id, performance=performance, db=db
+    )
 
 
 @router.delete("/{performance_id}")

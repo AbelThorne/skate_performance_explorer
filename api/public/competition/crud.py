@@ -2,11 +2,7 @@ from fastapi import Depends, HTTPException, status
 from sqlmodel import Session, select
 
 from api.database import get_session
-from api.public.competition.models import (
-    Competition,
-    CompetitionCreate,
-    CompetitionUpdate,
-)
+from api.commons.shemas import CompetitionCreate, CompetitionUpdate, Competition
 
 
 def create_competition(

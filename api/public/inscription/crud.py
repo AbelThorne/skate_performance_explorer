@@ -2,11 +2,7 @@ from fastapi import Depends, HTTPException, status
 from sqlmodel import Session, select
 
 from api.database import get_session
-from api.public.inscription.models import (
-    Inscription,
-    InscriptionCreate,
-    InscriptionUpdate,
-)
+from api.commons.shemas import InscriptionCreate, InscriptionUpdate, Inscription
 
 
 def create_inscription(

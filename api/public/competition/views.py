@@ -9,11 +9,8 @@ from api.public.competition.crud import (
     update_competition,
     delete_competition,
 )
-from api.public.competition.models import (
-    CompetitionCreate,
-    CompetitionRead,
-    CompetitionUpdate,
-)
+from api.commons.shemas import *
+
 
 router = APIRouter()
 
@@ -39,15 +36,15 @@ def get_a_competition(competition_id: int, db: Session = Depends(get_session)):
     return read_competition(competition_id=competition_id, db=db)
 
 
-# @router.patch("/{competition_id}", response_model=CompetitionRead)
-# def update_a_competition(
-#     competition_id: int,
-#     competition: CompetitionUpdate,
-#     db: Session = Depends(get_session),
-# ):
-#     return update_competition(
-#         competition_id=competition_id, competition=competition, db=db
-#     )
+@router.patch("/{competition_id}", response_model=CompetitionRead)
+def update_a_competition(
+    competition_id: int,
+    competition: CompetitionUpdate,
+    db: Session = Depends(get_session),
+):
+    return update_competition(
+        competition_id=competition_id, competition=competition, db=db
+    )
 
 
 @router.delete("/{competition_id}")

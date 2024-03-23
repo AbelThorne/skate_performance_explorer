@@ -9,12 +9,8 @@ from api.public.inscription.crud import (
     update_inscription,
     delete_inscription,
 )
+from api.commons.shemas import *
 
-from api.public.inscription.models import (
-    InscriptionCreate,
-    InscriptionRead,
-    InscriptionUpdate,
-)
 
 router = APIRouter()
 
@@ -40,15 +36,15 @@ def get_an_inscription(inscription_id: int, db: Session = Depends(get_session)):
     return read_inscription(inscription_id=inscription_id, db=db)
 
 
-# @router.patch("/{inscription_id}", response_model=InscriptionRead)
-# def update_an_inscription(
-#     inscription_id: int,
-#     inscription: InscriptionUpdate,
-#     db: Session = Depends(get_session),
-# ):
-#     return update_inscription(
-#         inscription_id=inscription_id, inscription=inscription, db=db
-#     )
+@router.patch("/{inscription_id}", response_model=InscriptionRead)
+def update_an_inscription(
+    inscription_id: int,
+    inscription: InscriptionUpdate,
+    db: Session = Depends(get_session),
+):
+    return update_inscription(
+        inscription_id=inscription_id, inscription=inscription, db=db
+    )
 
 
 @router.delete("/{inscription_id}")

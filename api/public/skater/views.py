@@ -10,7 +10,7 @@ from api.public.skater.crud import (
     update_skater,
 )
 
-from api.public.skater.models import SkaterCreate, SkaterRead, SkaterUpdate
+from api.commons.shemas import *
 
 router = APIRouter()
 
