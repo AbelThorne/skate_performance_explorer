@@ -12,6 +12,11 @@ psycopg2-binary = "*"
 numpy = "*"
 pandas = "*"
 pdfplumber = "*"
+pytest = "*"
+tavern = "*"
+tavern-fastapi = "*"
+httpx = "*"
+future = "*"
 
 [dev-packages]
 black = "*"

@@ -1,7 +1,7 @@
 from sqlmodel import Session
 
-from api.database import engine
-from api.utils.logger import logger_config
+from backend.database import engine
+from logger import logger_config
 
 logger = logger_config(__name__)
 

@@ -2,12 +2,12 @@ from fastapi import APIRouter, Depends
 
 from api.auth import authent
 
-from api.public.health import views as health
-from api.public.skater import views as skaters
-from api.public.inscription import views as inscriptions
-from api.public.competition import views as competitions
-from api.public.performance import views as performances
-from api.public.club import views as clubs
+from api.public import views as health
+from api.public import skater as skaters
+from api.public import inscription as inscriptions
+from api.public import competition as competitions
+from api.public import performance as performances
+from api.public import club as clubs
 
 api = APIRouter()
 

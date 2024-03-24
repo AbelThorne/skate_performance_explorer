@@ -3,7 +3,7 @@ import secrets
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
-from api.config import settings
+from config import settings
 
 basic_auth = HTTPBasic(auto_error=False)
 

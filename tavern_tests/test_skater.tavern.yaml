@@ -1,0 +1,68 @@
+
+---
+test_name: Skater Tests
+includes:
+  - !include common.yaml
+
+stages:
+  - name: Create a Skater
+    request:
+      method: POST
+      url: "http://localhost:8181/skaters"
+      json:
+        id: 1
+        name: "Luke Skywalker"
+        age: 20
+    response:
+      status_code: 200
+      json: {}
+  
+  - name: Get a Skater
+    request:
+      method: GET 
+      url: "http://localhost:8181/skaters/1"
+    response:
+      status_code: 200
+      json: []
+  
+  - name: Get a Skater - Not Found
+    request:
+      method: GET 
+      url: "http://localhost:8181/heroes/99"
+    response:
+      status_code: 404
+      json: 
+        detail: "Skater not found with id: 99"
+  
+  - name: Get Skaters
+    request:
+      method: GET 
+      url: "http://localhost:8181/skaters"
+      params:
+        offset: 0
+        limit: 100
+    response:
+      status_code: 200
+      json: []
+  
+  - name: Update a Skater
+    request:
+      method: PATCH 
+      url: "http://localhost:8181/skaters/1"
+      json:
+        name: "Luke Skywalker"
+        age: 21
+    response:
+      status_code: 200
+      json:
+        id: 1
+        name: "Luke Skywalker"
+        age: 21
+
+  - name: Delete a Skater
+    request:
+      method: DELETE 
+      url: "http://localhost:8181/skaters/1"
+    response:
+      json:
+        ok: true

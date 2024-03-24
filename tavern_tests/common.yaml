@@ -1,0 +1,8 @@
+
+---
+name: "Skate Performance Explorer API"
+description: Common Settings
+
+variables:
+  host: http://localhost:8181
+
