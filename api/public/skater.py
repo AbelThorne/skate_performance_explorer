@@ -10,7 +10,7 @@ from backend.crud.skater import (
     update_skater,
 )
 
-from commons.shemas import *
+from commons.schemas import *
 
 router = APIRouter()
 

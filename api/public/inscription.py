@@ -9,7 +9,7 @@ from backend.crud.inscription import (
     update_inscription,
     delete_inscription,
 )
-from commons.shemas import *
+from commons.schemas import *
 
 
 router = APIRouter()

@@ -9,7 +9,7 @@ from backend.crud.competition import (
     update_competition,
     delete_competition,
 )
-from commons.shemas import *
+from commons.schemas import *
 
 
 router = APIRouter()

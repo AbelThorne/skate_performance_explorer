@@ -12,15 +12,15 @@ from sqlmodel import SQLModel, Field, Relationship
 
 class InscriptionBase(SQLModel):
     category: str = Field(index=True)
-    skater_id: int = Field(foreign_key="cldearskater.id")
+    skater_id: int = Field(foreign_key="skater.id")
     competition_id: int = Field(foreign_key="competition.id")
 
 
 class Inscription(InscriptionBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
 
-    skater: "Skater" = Relationship(back_populates="skaters")
-    competition: "Competition" = Relationship(back_populates="incription")
+    skater: "Skater" = Relationship(back_populates="competition_inscriptions")
+    competition: "Competition" = Relationship(back_populates="skater_inscriptions")
 
 
 class InscriptionCreate(InscriptionBase):
@@ -50,14 +50,17 @@ class Skater(SkaterBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
 
     club_id: int = Field(foreign_key="club.id")
-    club: "Club" = Relationship(back_populates="skater")
+    club: "Club" = Relationship(back_populates="skaters")
 
     competition_inscriptions: list["Inscription"] = Relationship(
         back_populates="skater"
     )
     competitions: list["Competition"] = Relationship(
-        back_populates="skaters", link_model=Inscription
+        back_populates="skaters",
+        link_model=Inscription,
+        sa_relationship_kwargs={"viewonly": True},
     )
+    performances: list["Performance"] = Relationship(back_populates="skater")
 
 
 class SkaterCreate(SkaterBase):
@@ -121,7 +124,9 @@ class CompetitionBase(SQLModel):
 class Competition(CompetitionBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     skaters: list["Skater"] = Relationship(
-        back_populates="competitions", link_model=Inscription
+        back_populates="competitions",
+        link_model=Inscription,
+        sa_relationship_kwargs={"viewonly": True},
     )
     skater_inscriptions: list["Inscription"] = Relationship(
         back_populates="competition"

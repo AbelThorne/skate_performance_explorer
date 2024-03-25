@@ -2,7 +2,7 @@ from fastapi import Depends, HTTPException, status
 from sqlmodel import Session, select
 
 from backend.database import get_session
-from commons.shemas import PerformanceCreate, PerformanceUpdate, Performance
+from commons.schemas import PerformanceCreate, PerformanceUpdate, Performance
 
 
 def create_performance(

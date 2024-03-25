@@ -10,7 +10,7 @@ from backend.crud.club import (
     delete_club,
 )
 
-from commons.shemas import *
+from commons.schemas import *
 
 router = APIRouter()
 

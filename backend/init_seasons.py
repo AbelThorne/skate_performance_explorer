@@ -3,7 +3,7 @@ from sqlmodel import Session
 from datetime import date
 
 from backend.database import engine
-from commons.shemas import Competition
+from commons.schemas import Competition
 from logger import logger_config
 
 logger = logger_config(__name__)
@@ -23,9 +23,7 @@ def create_season_2023_2024():
                 location="Font Romeu",
                 rink_name="Patinoire Philippe Candeloro",
                 url="http://isujs.so.free.fr/Resultats/Resultats-2023-2024/TF-PRIDO/index.htm",
-                skaters=[],
-                skater_inscriptions=[],
-                performances=[],
+                processed=False,
             )
         )
 

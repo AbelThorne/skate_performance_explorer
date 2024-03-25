@@ -7,6 +7,10 @@ connect_args = {}
 engine = create_engine(settings.DATABASE_URI, echo=True, connect_args=connect_args)
 
 
+def drop_db_and_tables():
+    SQLModel.metadata.drop_all(engine)
+
+
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
 

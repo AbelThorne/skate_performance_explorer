@@ -2,7 +2,7 @@ from fastapi import Depends, HTTPException, status
 from sqlmodel import Session, select
 
 from backend.database import get_session
-from commons.shemas import SkaterCreate, SkaterUpdate, Skater
+from commons.schemas import SkaterCreate, SkaterUpdate, Skater
 
 
 def create_skater(skater: SkaterCreate, db: Session = Depends(get_session)):

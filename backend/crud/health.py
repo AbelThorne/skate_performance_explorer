@@ -3,7 +3,7 @@ from sqlmodel import Session, text
 
 from config import settings
 from backend.database import get_session
-from commons.shemas import Health, Stats, Status
+from commons.schemas import Health, Stats, Status
 from logger import logger_config
 
 logger = logger_config(__name__)

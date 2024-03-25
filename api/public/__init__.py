@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 
 from api.auth import authent
 
-from api.public import views as health
+from api.public import health as health
 from api.public import skater as skaters
 from api.public import inscription as inscriptions
 from api.public import competition as competitions

@@ -2,7 +2,9 @@ from fastapi import Depends, HTTPException, status
 from sqlmodel import Session, select
 
 from backend.database import get_session
-from commons.shemas import ClubCreate, ClubUpdate, Club
+
+# from commons.shemas import ClubCreate, ClubUpdate, Club
+from commons.schemas import ClubCreate, ClubUpdate, Club
 
 
 def create_club(club: ClubCreate, db: Session = Depends(get_session)):

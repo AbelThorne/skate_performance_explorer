@@ -3,8 +3,9 @@ from sqlmodel import Session
 
 from backend.database import Session, get_session
 from backend.crud.health import get_health, get_stats
-from commons.shemas import Health, Stats
 from logger import logger_config
+
+from commons.schemas import Health, Stats
 
 router = APIRouter()
 logger = logger_config(__name__)
