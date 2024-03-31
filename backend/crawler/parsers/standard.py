@@ -1,8 +1,9 @@
-from typing import Tuple, Union, Optional, List
+from typing import Tuple, Union, Optional, List, Any
 import pdfplumber
 from pdfplumber.page import Page
 import pandas as pd  # type: ignore
 import numpy as np
+from pydantic import AnyHttpUrl
 from parsers.common import EmptyResultsException, dictify, snake_case  # type: ignore
 
 
@@ -19,7 +20,7 @@ def parse_upper_table(
         "min_words_vertical": 2,
         "snap_y_tolerance": 4,
     }
-    rows = cropped.extract_table(table_settings)
+    rows: List[List[Any]] | None = cropped.extract_table(table_settings)
 
     assert rows is not None
     assert len(rows) == 2
@@ -84,7 +85,7 @@ def parse_upper_rect(page: Page, bbox: Tuple[int]):
         [w for w in words if w["text"] == "Score"][0]["bottom"] + 1,
         bbox[3],
     ]
-    rows = cropped.extract_table(
+    rows: List[List[Any]] | None = cropped.extract_table(
         {
             "explicit_vertical_lines": v_lines,
             "explicit_horizontal_lines": h_lines,
@@ -92,6 +93,7 @@ def parse_upper_rect(page: Page, bbox: Tuple[int]):
             "horizontal_strategy": "explicit",
         }
     )
+    assert rows is not None
     assert len(rows) == 1
     bonification = False
     try:

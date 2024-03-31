@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     DATABASE_URI: str = "postgresql+psycopg2://skating:skating@localhost:5432/skating"
     API_USERNAME: str = "skating"
     API_PASSWORD: str = "skating"
+    LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "DEBUG"
 
     class Config:
         case_sensitive = True

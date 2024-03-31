@@ -17,6 +17,8 @@ tavern = "*"
 tavern-fastapi = "*"
 httpx = "*"
 future = "*"
+colorlog = "*"
+bs4 = "*"
 
 [dev-packages]
 black = "*"

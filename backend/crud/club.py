@@ -2,9 +2,7 @@ from fastapi import Depends, HTTPException, status
 from sqlmodel import Session, select
 
 from backend.database import get_session
-
-# from commons.shemas import ClubCreate, ClubUpdate, Club
-from commons.schemas import ClubCreate, ClubUpdate, Club
+from commons.schemas import *
 
 
 def create_club(club: ClubCreate, db: Session = Depends(get_session)):
@@ -61,3 +59,17 @@ def delete_club(club_id: int, db: Session = Depends(get_session)):
     db.delete(club)
     db.commit()
     return {"ok": True}
+
+
+def club_get_or_create(club: Club, db: Session = Depends(get_session)):
+    """Get a club from the database or create it if it doesn't exist."""
+    if club is None or club.abbrev is None:
+        return None
+
+    club_db = db.exec(select(Club).where(Club.abbrev == club.abbrev)).first()
+    if club_db is None:
+        club_db = Club.model_validate(club)
+        db.add(club_db)
+        db.commit()
+        db.refresh(club_db)
+    return club_db

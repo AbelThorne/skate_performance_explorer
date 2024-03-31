@@ -2,8 +2,8 @@ from typing import Optional, TYPE_CHECKING
 from sqlmodel import SQLModel, Field, Relationship
 
 if TYPE_CHECKING:
-    from .competition import Competition
     from .skater import Skater
+    from .competition import Competition
 
 
 class InscriptionBase(SQLModel):

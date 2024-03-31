@@ -3,11 +3,9 @@ from typing import Optional, TYPE_CHECKING
 from sqlmodel import SQLModel, Field, Relationship
 
 from .inscription import Inscription
-
-if TYPE_CHECKING:
-    from .club import Club
-    from .competition import Competition
-    from .performance import Performance
+from .competition import Competition
+from .performance import Performance
+from .club import Club
 
 
 class SkaterBase(SQLModel):
@@ -54,3 +52,4 @@ class SkaterUpdate(SQLModel):
     club: Optional["Club"]
     competition_inscriptions: list["Inscription"] | None
     competitions: list["Competition"] | None
+    performances: list["Performance"] | None

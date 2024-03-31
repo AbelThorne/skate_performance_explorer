@@ -6,14 +6,17 @@ from typing import Optional, Literal
 from enum import Enum
 from datetime import date
 
-from pydantic import BaseModel
+from pydantic import BaseModel, computed_field
 from sqlmodel import SQLModel, Field, Relationship
+
+
+# =================== INSCRIPTION MODELS =====================
 
 
 class InscriptionBase(SQLModel):
     category: str = Field(index=True)
-    skater_id: int = Field(foreign_key="skater.id")
-    competition_id: int = Field(foreign_key="competition.id")
+    skater_id: Optional[int] = Field(default=None, foreign_key="skater.id")
+    competition_id: Optional[int] = Field(default=None, foreign_key="competition.id")
 
 
 class Inscription(InscriptionBase, table=True):
@@ -37,20 +40,26 @@ class InscriptionUpdate(SQLModel):
     competition: Optional["Competition"]
 
 
+# =================== SKATER MODELS =====================
+
+
 class SkaterBase(SQLModel):
-    full_name: str = Field(index=True)
     first_name: str
     last_name: str = Field(index=True)
-    birth_date: str
+    birth_date: Optional[str]
     genre: str
     nation: Optional[str]
+    club_id: Optional[int] = Field(default=None, foreign_key="club.id")
+
+    @computed_field
+    def full_name(self) -> str:
+        return f"{self.first_name} {self.last_name}"
 
 
 class Skater(SkaterBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
 
-    club_id: int = Field(foreign_key="club.id")
-    club: "Club" = Relationship(back_populates="skaters")
+    club: Optional["Club"] = Relationship(back_populates="skaters")
 
     competition_inscriptions: list["Inscription"] = Relationship(
         back_populates="skater"
@@ -72,7 +81,6 @@ class SkaterRead(SkaterBase):
 
 
 class SkaterUpdate(SQLModel):
-    full_name: str | None
     first_name: str | None
     last_name: str | None
     birth_date: str | None
@@ -83,8 +91,12 @@ class SkaterUpdate(SQLModel):
     competitions: list["Competition"] | None
 
 
+# =================== CLUB MODELS =====================
+
+
 class ClubBase(SQLModel):
-    name: str = Field(index=True)
+    abbrev: str = Field(index=True)
+    name: str | None
     city: str | None
     nation: str | None
 
@@ -103,10 +115,14 @@ class ClubRead(ClubBase):
 
 
 class ClubUpdate(SQLModel):
+    abbrev: str | None
     name: str | None
     city: str | None
     nation: str | None
     skaters: list["Skater"] | None
+
+
+# =================== COMPETITION MODELS =====================
 
 
 class CompetitionBase(SQLModel):
@@ -119,6 +135,7 @@ class CompetitionBase(SQLModel):
     rink_name: Optional[str]
     url: Optional[str]
     processed: bool = False
+    links_table: Optional[str]
 
 
 class Competition(CompetitionBase, table=True):
@@ -157,6 +174,7 @@ class CompetitionUpdate(SQLModel):
     performances: list["Performance"] | None
 
 
+# =================== PERFORMANCE MODELS =====================
 class PerformanceBase(SQLModel):
     skater_id: int = Field(foreign_key="skater.id")
     competition_id: int = Field(foreign_key="competition.id")
@@ -202,6 +220,9 @@ class PerformanceUpdate(SQLModel):
     total_deductions: float | None
     bonifications: float | None
     program: str | None
+
+
+# =================== HEALTH MODELS =====================
 
 
 class Status(str, Enum):

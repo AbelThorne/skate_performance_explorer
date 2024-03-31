@@ -4,8 +4,8 @@ from api.auth import authent
 
 from api.public import health as health
 from api.public import skater as skaters
-from api.public import inscription as inscriptions
 from api.public import competition as competitions
+from api.public import inscription as inscriptions
 from api.public import performance as performances
 from api.public import club as clubs
 

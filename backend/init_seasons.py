@@ -4,6 +4,7 @@ from datetime import date
 
 from backend.database import engine
 from commons.schemas import Competition
+from backend.crud.competition import crawl_competition
 from logger import logger_config
 
 logger = logger_config(__name__)
@@ -24,6 +25,7 @@ def create_season_2023_2024():
                 rink_name="Patinoire Philippe Candeloro",
                 url="http://isujs.so.free.fr/Resultats/Resultats-2023-2024/TF-PRIDO/index.htm",
                 processed=False,
+                links_table=None,
             )
         )
 
@@ -33,6 +35,7 @@ def create_season_2023_2024():
         logger.info(f"============ Created season 2023-2024 ============")
         for competition in competitions:
             session.refresh(competition)
+            crawl_competition(competition.id, session)
             logger.info(
                 f"Competition {competition.name} created with id {competition.id} ({competition})"
             )

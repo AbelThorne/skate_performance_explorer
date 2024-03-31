@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 from sqlmodel import Session
 
+from commons.schemas import *
 from backend.database import get_session
 from backend.crud.performance import (
     create_performance,
@@ -10,21 +11,19 @@ from backend.crud.performance import (
     delete_performance,
 )
 
-from commons.schemas import *
-
 
 router = APIRouter()
 
 
 @router.post("", response_model=PerformanceRead)
-def create_a_performance(
+async def create_a_performance(
     performance: PerformanceCreate, db: Session = Depends(get_session)
 ):
     return create_performance(performance=performance, db=db)
 
 
 @router.get("", response_model=list[PerformanceRead])
-def get_performances(
+async def get_performances(
     offset: int = 0,
     limit: int = Query(default=100, lte=100),
     db: Session = Depends(get_session),
@@ -33,12 +32,12 @@ def get_performances(
 
 
 @router.get("/{performance_id}", response_model=PerformanceRead)
-def get_a_performance(performance_id: int, db: Session = Depends(get_session)):
+async def get_a_performance(performance_id: int, db: Session = Depends(get_session)):
     return read_performance(performance_id=performance_id, db=db)
 
 
 @router.patch("/{performance_id}", response_model=PerformanceRead)
-def update_a_performance(
+async def update_a_performance(
     performance_id: int,
     performance: PerformanceUpdate,
     db: Session = Depends(get_session),
@@ -49,5 +48,5 @@ def update_a_performance(
 
 
 @router.delete("/{performance_id}")
-def delete_a_performance(performance_id: int, db: Session = Depends(get_session)):
+async def delete_a_performance(performance_id: int, db: Session = Depends(get_session)):
     return delete_performance(performance_id=performance_id, db=db)

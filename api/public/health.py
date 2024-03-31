@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, status
 from sqlmodel import Session
 
+from commons.schemas import Health, Stats
 from backend.database import Session, get_session
 from backend.crud.health import get_health, get_stats
 from logger import logger_config
 
-from commons.schemas import Health, Stats
 
 router = APIRouter()
 logger = logger_config(__name__)
@@ -17,7 +17,7 @@ logger = logger_config(__name__)
     status_code=status.HTTP_200_OK,
     responses={200: {"model": Health}},
 )
-def health(db: Session = Depends(get_session)):
+async def health(db: Session = Depends(get_session)):
     return get_health(db=db)
 
 
@@ -27,5 +27,5 @@ def health(db: Session = Depends(get_session)):
     status_code=status.HTTP_200_OK,
     responses={200: {"model": Stats}},
 )
-def health_stats(db: Session = Depends(get_session)):
+async def health_stats(db: Session = Depends(get_session)):
     return get_stats(db=db)

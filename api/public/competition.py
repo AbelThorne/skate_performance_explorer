@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 from sqlmodel import Session
 
+from commons.schemas import *
 from backend.database import get_session
 from backend.crud.competition import (
     create_competition,
@@ -9,21 +10,20 @@ from backend.crud.competition import (
     update_competition,
     delete_competition,
 )
-from commons.schemas import *
 
 
 router = APIRouter()
 
 
 @router.post("", response_model=CompetitionRead)
-def create_a_competition(
+async def create_a_competition(
     competition: CompetitionCreate, db: Session = Depends(get_session)
 ):
     return create_competition(competition=competition, db=db)
 
 
 @router.get("", response_model=list[CompetitionRead])
-def get_competitions(
+async def get_competitions(
     offset: int = 0,
     limit: int = Query(default=100, lte=100),
     db: Session = Depends(get_session),
@@ -32,12 +32,12 @@ def get_competitions(
 
 
 @router.get("/{competition_id}", response_model=CompetitionRead)
-def get_a_competition(competition_id: int, db: Session = Depends(get_session)):
+async def get_a_competition(competition_id: int, db: Session = Depends(get_session)):
     return read_competition(competition_id=competition_id, db=db)
 
 
 @router.patch("/{competition_id}", response_model=CompetitionRead)
-def update_a_competition(
+async def update_a_competition(
     competition_id: int,
     competition: CompetitionUpdate,
     db: Session = Depends(get_session),
@@ -48,5 +48,5 @@ def update_a_competition(
 
 
 @router.delete("/{competition_id}")
-def delete_a_competition(competition_id: int, db: Session = Depends(get_session)):
+async def delete_a_competition(competition_id: int, db: Session = Depends(get_session)):
     return delete_competition(competition_id=competition_id, db=db)

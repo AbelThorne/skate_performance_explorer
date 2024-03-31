@@ -1,4 +1,6 @@
 import logging
+from colorlog import ColoredFormatter
+from config import settings
 
 
 def logger_config(module):
@@ -7,12 +9,15 @@ def logger_config(module):
     params: Module Name. e.i: logger_config(__name__).
     return: Custom logger_config Object.
     """
-    formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+    LOGFORMAT = (
+        "%(log_color)s%(levelname)-8s%(reset)s | %(log_color)s%(message)s%(reset)s"
+    )
+    formatter = ColoredFormatter(LOGFORMAT)
     handler = logging.StreamHandler()
     handler.setFormatter(formatter)
 
     custom_logger = logging.getLogger(module)
-    custom_logger.setLevel(logging.DEBUG)
+    custom_logger.setLevel(settings.LOG_LEVEL)
 
     custom_logger.addHandler(handler)
 
