@@ -93,7 +93,7 @@ def get_category_entries(url: str) -> Optional[pd.DataFrame]:
     return df
 
 
-def get_panel(url: str) -> Optional[dict]:
+def get_category_panel(url: str) -> Optional[dict]:
     """Get the panel for a given category."""
     soup = get_soup(url)
     if soup is None:
@@ -122,6 +122,74 @@ def get_panel(url: str) -> Optional[dict]:
         nationality = cells[2].text.strip()
         res[function] = {"name": name, "nationality": nationality}
     return res
+
+
+def get_category_detailed_results(url: str) -> Optional[pd.DataFrame]:
+    """Get the detailed results for a given category."""
+    soup = get_soup(url)
+    if soup is None:
+        return None
+
+    df = pd.DataFrame(
+        columns=[
+            "Rank",
+            "Name",
+            "Club",
+            "Nation",
+            "TSS",
+            "TES",
+            "PCS",
+            "CO",
+            "PR",
+            "SK",
+            "Ded.",
+            "StN.",
+        ]
+    )
+    table = None
+    header = "\n\n \xa0 Pl."
+    tables = soup.find_all("table")
+    while len(tables) > 0 and table is None:
+        t = tables.pop(0)
+        if t.text.startswith(header):
+            table = t
+
+    if table is None:
+        log.warning("Could not find detailed results table")
+        return None
+
+    rows = table.find_all("tr")  # type: ignore
+    for r in rows[1:]:
+        cells = r.find_all("td")
+        if len(cells) == 0:
+            continue
+        rank = cells[0].text.strip()
+        name = cells[1].text.strip()
+        club = cells[2].text.strip()
+        nation = cells[3].text.strip()
+        tss: float = float(cells[4].text.strip()) if rank not in ["WD", "DSQ"] else 0.0
+        tes: float = float(cells[5].text.strip()) if rank not in ["WD", "DSQ"] else 0.0
+        pcs: float = float(cells[7].text.strip()) if rank not in ["WD", "DSQ"] else 0.0
+        co: float = float(cells[8].text.strip()) if rank not in ["WD", "DSQ"] else 0.0
+        pr: float = float(cells[9].text.strip()) if rank not in ["WD", "DSQ"] else 0.0
+        sk: float = float(cells[10].text.strip()) if rank not in ["WD", "DSQ"] else 0.0
+        ded: float = float(cells[11].text.strip()) if rank not in ["WD", "DSQ"] else 0.0
+        stn: int = int(cells[12].text.strip()[1:])
+        df.loc[len(df.index)] = [
+            rank,
+            name,
+            club,
+            nation,
+            tss,
+            tes,
+            pcs,
+            co,
+            pr,
+            sk,
+            ded,
+            stn,
+        ]
+    return df
 
 
 def get_links_table(competition: Competition) -> Optional[Dict[str, Any]]:
@@ -251,7 +319,10 @@ def parse_category_genre(name: str) -> str:
         case "Pairs" | "Danse" | "Couple":
             genre = "Couples"
         case _:
-            raise ValueError(f"Could not find genre for category {name}")
+            log.warning(
+                f"Could not find genre for category {name}, using 'Dames' as default"
+            )
+            genre = "Dames"
     return genre
 
 

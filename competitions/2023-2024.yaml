@@ -1,0 +1,48 @@
+season: 2023-2024
+circuits:
+  - name: Ligue Occitanie
+    competitions:
+      - name: Coupe Gerard Prido
+        type: TF
+        start: 2023-12-02
+        end: 2023-12-03
+        location: Font Romeu
+        rink_name: Patinoire Philippe Candeloro
+        url: http://isujs.so.free.fr/Resultats/Resultats-2023-2024/TF-PRIDO/index.htm
+      - name: Coupe des Costières
+        type: CR
+        start: 2024-02-03
+        end: 2024-02-04
+        location: Nîmes
+        rink_name: Patinoire Municipale
+        url: http://isujs.so.free.fr/Resultats/Resultats-2023-2024/CoupeCostieres/index.htm
+      - name: SFC Sud-Ouest - Trophée des Violettes
+        type: SFC
+        start: 2024-02-10
+        end: 2024-02-11
+        location: Toulouse
+        rink_name: Patinoire Alex Jany
+        url: http://isujs.so.free.fr/Resultats/Resultats-2023-2024/SFC-SO-2024/index.htm
+      - name: Trophée du Soleil
+        type: CR
+        start: 2024-03-02
+        end: 2024-03-03
+        location: Montpellier
+        rink_name: Patinoire Vegapolis
+        url: http://isujs.so.free.fr/Resultats/Resultats-2023-2024/MMMP-2024/index.htm
+      - name: Trophée de la Ville de Blagnac - Championnat de Ligue
+        type: CdL
+        start: 2024-03-30
+        end: 2024-03-31
+        location: Blagnac
+        rink_name: Patinoire Jacques Raynaud
+        url: http://isujs.so.free.fr/Resultats/Resultats-2023-2024/CFL-BPG-24/index.htm
+  - name: National
+    competitions:
+      - name: TDF B6 - Toulouse
+        type: TdF
+        start: 2023-12-09
+        end: 2023-12-10
+        location: Toulouse
+        rink_name: Patinoire Alex Jany
+        url: http://isujs.so.free.fr/Resultats/Resultats-2023-2024/TDF-B6-TCP/index.htm

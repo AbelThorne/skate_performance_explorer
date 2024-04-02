@@ -2,7 +2,7 @@
 A Club is an organization that can be associated to a Skater.
 """
 
-from typing import Optional, Literal, List
+from typing import Optional, Literal
 from enum import Enum
 from datetime import date
 
@@ -173,10 +173,6 @@ class SkaterBase(SQLModel):
     nation: Optional[str]
     club_id: Optional[int] = Field(default=None, foreign_key="club.id")
 
-    @computed_field
-    def full_name(self) -> str:
-        return f"{self.first_name} {self.last_name}"
-
 
 class Skater(SkaterBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -255,6 +251,7 @@ class CompetitionBase(SQLModel):
     end: Optional[date]
     location: Optional[str]
     rink_name: Optional[str]
+    circuit: Optional[str] = None
     url: Optional[str]
 
 
@@ -279,23 +276,29 @@ class CompetitionUpdate(SQLModel):
     end: date | None
     location: str | None
     rink_name: str | None
+    circuit: str | None
     url: str | None
     categories: list["Category"] | None
 
 
 # =================== PERFORMANCE MODELS =====================
 class PerformanceBase(SQLModel):
-    skater_id: int = Field(foreign_key="skater.id")
-    category_id: int = Field(foreign_key="category.id")
-    score: float
-    rank: int
+    skater_id: int | None = Field(default=None, foreign_key="skater.id")
+    category_id: int | None = Field(default=None, foreign_key="category.id")
+    segment: str | None
+    rank: int | None
+    withdrawn: bool | None = False
+    disqualified: bool | None = False
     starting_number: int
-    total_segment_score: float
-    total_element_score: float
-    total_component_score: float
-    total_deductions: float
-    bonifications: float
-    program: str
+    total_segment_score: float | None
+    total_element_score: float | None
+    total_component_score: float | None
+    total_deductions: float | None
+    composition: float | None
+    presentation: float | None
+    skating_skills: float | None
+    bonifications: float | None
+    total_entries: int
 
 
 class Performance(PerformanceBase, table=True):
@@ -316,14 +319,19 @@ class PerformanceRead(PerformanceBase):
 class PerformanceUpdate(SQLModel):
     skater: Optional["Skater"]
     category: Optional["Category"]
-    score: float | None
+    segment: str | None
     rank: int | None
+    withdrawn: bool | None
     starting_number: int | None
     total_segment_score: float | None
     total_element_score: float | None
     total_component_score: float | None
     total_deductions: float | None
+    composition: float | None
+    presentation: float | None
+    skating_skills: float | None
     bonifications: float | None
+    total_entries: int | None = None
 
 
 # =================== HEALTH MODELS =====================
