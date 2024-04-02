@@ -1,5 +1,6 @@
 from fastapi import Depends, HTTPException, status
 from sqlmodel import Session, select
+from sqlmodel.sql.expression import SelectOfScalar
 
 from backend.database import get_session
 from commons.schemas import *
@@ -61,15 +62,27 @@ def delete_club(club_id: int, db: Session = Depends(get_session)):
     return {"ok": True}
 
 
-def club_get_or_create(club: Club, db: Session = Depends(get_session)):
-    """Get a club from the database or create it if it doesn't exist."""
-    if club is None or club.abbrev is None:
-        return None
+def find_or_create_club(
+    query: SelectOfScalar[Club],
+    club: ClubCreate,
+    db: Session = Depends(get_session),
+):
+    query_result = db.exec(query).first()
+    if query_result:
+        return query_result
+    else:
+        return create_club(club, db)
 
-    club_db = db.exec(select(Club).where(Club.abbrev == club.abbrev)).first()
-    if club_db is None:
-        club_db = Club.model_validate(club)
-        db.add(club_db)
-        db.commit()
-        db.refresh(club_db)
-    return club_db
+
+# def club_get_or_create(club: Club, db: Session = Depends(get_session)):
+#     """Get a club from the database or create it if it doesn't exist."""
+#     if club is None or club.abbrev is None:
+#         return None
+
+#     club_db = db.exec(select(Club).where(Club.abbrev == club.abbrev)).first()
+#     if club_db is None:
+#         club_db = Club.model_validate(club)
+#         db.add(club_db)
+#         db.commit()
+#         db.refresh(club_db)
+#     return club_db

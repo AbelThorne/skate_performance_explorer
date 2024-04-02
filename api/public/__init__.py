@@ -5,7 +5,9 @@ from api.auth import authent
 from api.public import health as health
 from api.public import skater as skaters
 from api.public import competition as competitions
-from api.public import inscription as inscriptions
+
+# from api.public import inscription as inscriptions
+from api.public import category as categories
 from api.public import performance as performances
 from api.public import club as clubs
 
@@ -30,10 +32,16 @@ api.include_router(
     tags=["Competitions"],
     dependencies=[Depends(authent)],
 )
+# api.include_router(
+#     inscriptions.router,
+#     prefix="/inscriptions",
+#     tags=["Inscriptions"],
+#     dependencies=[Depends(authent)],
+# )
 api.include_router(
-    inscriptions.router,
-    prefix="/inscriptions",
-    tags=["Inscriptions"],
+    categories.router,
+    prefix="/categories",
+    tags=["Categories"],
     dependencies=[Depends(authent)],
 )
 api.include_router(

@@ -20,7 +20,7 @@ async def create_a_skater(skater: SkaterCreate, db: Session = Depends(get_sessio
     return create_skater(skater=skater, db=db)
 
 
-@router.get("", response_model=list[SkaterRead])
+@router.get("", response_model=list[SkaterReadWithClub])
 async def get_skaters(
     offset: int = 0,
     limit: int = Query(default=100, lte=100),
@@ -29,7 +29,7 @@ async def get_skaters(
     return read_skaters(offset=offset, limit=limit, db=db)
 
 
-@router.get("/{skater_id}", response_model=SkaterRead)
+@router.get("/{skater_id}", response_model=SkaterReadWithClub)
 async def get_a_skater(skater_id: int, db: Session = Depends(get_session)):
     return read_skater(skater_id=skater_id, db=db)
 
