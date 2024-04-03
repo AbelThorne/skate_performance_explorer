@@ -2,8 +2,6 @@ import os
 import yaml
 from sqlmodel import Session, select
 
-from datetime import date
-
 from backend.database import engine
 from commons.schemas import Competition
 from backend.crud.competition import crawl_competition
@@ -71,4 +69,4 @@ def initialize_competitions(rebuild_all: bool = False):
 
 
 if __name__ == "__main__":
-    initialize_competitions(rebuild_all=False)
+    initialize_competitions(rebuild_all=True)

@@ -1,4 +1,5 @@
 from enum import Enum
+from operator import ge
 from pathlib import Path
 from typing import Optional, Tuple, Any, Dict, Literal
 import yaml  # type: ignore
@@ -124,7 +125,60 @@ def get_category_panel(url: str) -> Optional[dict]:
     return res
 
 
-def get_category_detailed_results(url: str) -> Optional[pd.DataFrame]:
+def get_category_results(url: str) -> Optional[pd.DataFrame]:
+    soup = get_soup(url)
+    if soup is None:
+        return None
+
+    df = pd.DataFrame(
+        columns=["FinalRank", "Name", "Club", "Nation", "Score", "SP", "FS"]
+    )
+    table = None
+    header = "\n\n \xa0 FPl."
+    tables = soup.find_all("table")
+    while len(tables) > 0 and table is None:
+        t = tables.pop(0)
+        if t.text.startswith(header):
+            table = t
+
+    if table is None:
+        log.warning("Could not find results table")
+        return None
+
+    rows = table.find_all("tr")  # type: ignore
+    headers = [cell.text.strip() for cell in rows[0].find_all("th")]
+    if len(headers) == 7:
+        has_sp = True
+    else:
+        has_sp = False
+    for r in rows[1:]:
+        cells = r.find_all("td")
+        if len(cells) == 0:
+            continue
+        final_rank = cells[0].text.strip()
+        name = cells[1].text.strip()
+        club = cells[2].text.strip()
+        nation = cells[3].text.strip()
+        if final_rank in ["WD", "DSQ"]:
+            score = 0.0
+            sp = 0
+            fs = 0
+        else:
+            score = float(cells[4].text.strip())
+            sp = int(cells[5].text.strip()) if has_sp else 0
+            fs = int(cells[6].text.strip()) if has_sp else int(cells[5].text.strip())
+        df.loc[len(df.index)] = [  # type: ignore
+            final_rank,
+            name,
+            club,
+            nation,
+            score,
+            sp,
+            fs,
+        ]
+
+
+def get_program_detailed_results(url: str) -> Optional[pd.DataFrame]:
     """Get the detailed results for a given category."""
     soup = get_soup(url)
     if soup is None:
@@ -167,13 +221,23 @@ def get_category_detailed_results(url: str) -> Optional[pd.DataFrame]:
         name = cells[1].text.strip()
         club = cells[2].text.strip()
         nation = cells[3].text.strip()
-        tss: float = float(cells[4].text.strip()) if rank not in ["WD", "DSQ"] else 0.0
-        tes: float = float(cells[5].text.strip()) if rank not in ["WD", "DSQ"] else 0.0
-        pcs: float = float(cells[7].text.strip()) if rank not in ["WD", "DSQ"] else 0.0
-        co: float = float(cells[8].text.strip()) if rank not in ["WD", "DSQ"] else 0.0
-        pr: float = float(cells[9].text.strip()) if rank not in ["WD", "DSQ"] else 0.0
-        sk: float = float(cells[10].text.strip()) if rank not in ["WD", "DSQ"] else 0.0
-        ded: float = float(cells[11].text.strip()) if rank not in ["WD", "DSQ"] else 0.0
+        if rank in ["WD", "DSQ"]:
+            tss: float = 0.0
+            tes: float = 0.0
+            pcs: float = 0.0
+            co: float = 0.0
+            pr: float = 0.0
+            sk: float = 0.0
+            ded: float = 0.0
+            stn: int = 0
+        else:
+            tss: float = float(cells[4].text.strip())
+            tes: float = float(cells[5].text.strip())
+            pcs: float = float(cells[7].text.strip())
+            co: float = float(cells[8].text.strip())
+            pr: float = float(cells[9].text.strip())
+            sk: float = float(cells[10].text.strip())
+            ded: float = float(cells[11].text.strip())
         stn: int = int(cells[12].text.strip()[1:])
         df.loc[len(df.index)] = [
             rank,
@@ -281,16 +345,6 @@ def parse_category_level(
 ) -> str:
     """Get the level from the category name"""
     for level in [
-        "Duo",
-        "Exhibition",
-        "Open",
-        "Open",
-        "Adulte Acier",
-        "Adulte Etain",
-        "Adulte Bronze",
-        "Adulte Argent",
-        "Adulte Or",
-        "Adulte Masters",
         "R3 D",
         "R3 C",
         "R3 B",
@@ -298,8 +352,24 @@ def parse_category_level(
         "R2",
         "R1",
         "Fédéral",
+        "F1",
+        "F2",
         "National",
-        "International",
+        "N1",
+        "N2",
+        "Catégorie 1",
+        "Catégorie 2",
+        "Catégorie 3",
+        "Catégorie 4",
+        "Duo",
+        "Exhibition",
+        "Open",
+        "Adulte Acier",
+        "Adulte Etain",
+        "Adulte Bronze",
+        "Adulte Argent",
+        "Adulte Or",
+        "Adulte Masters",
     ]:
         regex = re.compile(f"{level}", re.IGNORECASE)
         if regex.match(name):

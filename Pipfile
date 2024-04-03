@@ -23,6 +23,7 @@ bs4 = "*"
 [dev-packages]
 black = "*"
 pylint = "*"
+ipykernel = "*"
 
 [requires]
 python_version = "3.12.2"

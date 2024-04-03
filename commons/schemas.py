@@ -101,36 +101,8 @@ class CategoryReadWithCompetition(CategoryRead):
 
 
 class CategoryUpdate(SQLModel):
-    # genre: Literal["Hommes", "Dames"] | None
     genre: str | None
-    # age: (
-    #     list[Literal["Poussin", "Benjamin", "Minime", "Novice", "Junior", "Senior"]]
-    #     | None
-    # )
     age: str | None
-    # level: (
-    #     Literal[
-    #         "Duo",
-    #         "Exhibition",
-    #         "Open",
-    #         "Adulte Acier",
-    #         "Adulte Etain",
-    #         "Adulte Bronze",
-    #         "Adulte Argent",
-    #         "Adulte Or",
-    #         "Adulte Masters",
-    #         "R3 D",
-    #         "R3 C",
-    #         "R3 B",
-    #         "R3 A",
-    #         "R2",
-    #         "R1",
-    #         "Federal",
-    #         "National",
-    #         "International",
-    #     ]
-    #     | None
-    # )
     level: str | None
     entries_url: str | None
     sp_panel_url: str | None
@@ -285,7 +257,56 @@ class CompetitionUpdate(SQLModel):
 class PerformanceBase(SQLModel):
     skater_id: int | None = Field(default=None, foreign_key="skater.id")
     category_id: int | None = Field(default=None, foreign_key="category.id")
-    segment: str | None
+    withdrawn: bool | None
+    disqualified: bool | None
+    rank: int | None
+    score: float | None
+    total_entries: int
+
+
+class Performance(PerformanceBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+
+    skater: "Skater" = Relationship(back_populates="performances")
+    category: "Category" = Relationship(back_populates="performances")
+
+    short_program: Optional["Program"] = Relationship(back_populates="performance")
+    free_skating: Optional["Program"] = Relationship(back_populates="performance")
+
+
+class PerformanceCreate(PerformanceBase):
+    pass
+
+
+class PerformanceRead(PerformanceBase):
+    id: int
+    short_program: Optional["Program"]
+    free_skating: Optional["Program"]
+
+
+class PerformanceUpdate(SQLModel):
+    skater: Optional["Skater"]
+    category: Optional["Category"]
+    rank: int | None
+    withdrawn: bool | None
+    disqualified: bool | None
+    starting_number: int | None
+    total_segment_score: float | None
+    total_element_score: float | None
+    total_component_score: float | None
+    total_deductions: float | None
+    composition: float | None
+    presentation: float | None
+    skating_skills: float | None
+    bonifications: float | None
+    total_entries: int | None = None
+
+
+# =================== PROGRAM MODELS =====================
+
+
+class ProgramBase(SQLModel):
+    type: str  # Literal["SP", "FS"]
     rank: int | None
     withdrawn: bool | None = False
     disqualified: bool | None = False
@@ -298,40 +319,12 @@ class PerformanceBase(SQLModel):
     presentation: float | None
     skating_skills: float | None
     bonifications: float | None
-    total_entries: int
+    performance_id: int | None = Field(default=None, foreign_key="performance.id")
 
 
-class Performance(PerformanceBase, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-
-    skater: "Skater" = Relationship(back_populates="performances")
-    category: "Category" = Relationship(back_populates="performances")
-
-
-class PerformanceCreate(PerformanceBase):
-    pass
-
-
-class PerformanceRead(PerformanceBase):
-    id: int
-
-
-class PerformanceUpdate(SQLModel):
-    skater: Optional["Skater"]
-    category: Optional["Category"]
-    segment: str | None
-    rank: int | None
-    withdrawn: bool | None
-    starting_number: int | None
-    total_segment_score: float | None
-    total_element_score: float | None
-    total_component_score: float | None
-    total_deductions: float | None
-    composition: float | None
-    presentation: float | None
-    skating_skills: float | None
-    bonifications: float | None
-    total_entries: int | None = None
+class Program(ProgramBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    performance: Optional["Performance"] = Relationship()
 
 
 # =================== HEALTH MODELS =====================

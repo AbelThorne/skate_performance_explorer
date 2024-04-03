@@ -9,7 +9,8 @@ from sqlalchemy import func as F
 
 from backend.database import get_session
 from backend.crawler.competition_crawler import (
-    get_category_detailed_results,
+    get_category_results,
+    get_program_detailed_results,
     get_category_entries,
     get_category_panel,
     parse_category_age,
@@ -204,17 +205,13 @@ def create_category_from_crawler(
 
     ## Performances
     ############################
-    performances = []
-    for seg, segment_obj in segment.items():
-        if segment_obj["details"] is None:
-            continue
-        df_perf = get_category_detailed_results(segment_obj["details"])
-        if df_perf is None:
-            logger.warning(
-                f"Could not get detailed results for {seg} of {crawled['name']}"
-            )
+    if category_to_db.results_url is not None:
+        df_perfs = get_category_results(category_to_db.results_url)
+        if df_perfs is None:
+            logger.warning(f"Could not get results for {crawled['name']}")
         else:
-            for _, perf in df_perf.iterrows():
+            performances = []
+            for _, perf in df_perfs.iterrows():
                 skater = db.exec(
                     select(Skater).where(
                         F.concat(Skater.first_name, " ", Skater.last_name)
@@ -226,29 +223,92 @@ def create_category_from_crawler(
                         f"Could not find skater {perf['Name']} in the database"
                     )
                     continue
-                valid_perf = perf["Rank"] not in ["WD", "DSQ"]
                 performances.append(
                     Performance(
                         skater_id=skater.id,
                         skater=skater,
                         category_id=category_to_db.id,
                         category=category_to_db,
-                        segment=seg,
                         withdrawn=perf["Rank"] == "WD",
                         disqualified=perf["Rank"] == "DSQ",
-                        total_element_score=(perf["TES"] if valid_perf else None),
-                        total_component_score=(perf["PCS"] if valid_perf else None),
-                        total_deductions=(perf["Ded."] if valid_perf else None),
-                        total_segment_score=(perf["TSS"] if valid_perf else None),
-                        composition=(perf["CO"] if valid_perf else None),
-                        presentation=(perf["PR"] if valid_perf else None),
-                        skating_skills=(perf["SK"] if valid_perf else None),
-                        rank=perf["Rank"] if valid_perf else None,
-                        bonifications=0.0 if valid_perf else None,
-                        starting_number=perf["StN."],
+                        rank=perf["FinalRank"],
+                        score=perf["Score"],
                         total_entries=len(category_to_db.entries),
                     )
                 )
+            db.add_all(performances)
+            db.commit()
+
+    ## Programs
+    ############################
+    programs = []
+    performances = []
+    for seg, segment_obj in segment.items():
+        if segment_obj["details"] is None:
+            continue
+        df_perfs = get_program_detailed_results(segment_obj["details"])
+        if df_perfs is None:
+            logger.warning(
+                f"Could not get detailed results for {seg} of {crawled['name']}"
+            )
+        else:
+            for _, program in df_perfs.iterrows():
+                performance = db.exec(
+                    select(Performance).where(
+                        col(Performance.skater_id).in_(
+                            select(Skater.id).where(
+                                F.concat(Skater.first_name, " ", Skater.last_name)
+                                == program["Name"]
+                            )
+                        )
+                    )
+                ).first()
+                if performance is None:
+                    logger.warning(
+                        f"Could not find performance of skater {program['Name']} in the database"
+                    )
+                    continue
+                valid_prog = program["Rank"] not in ["WD", "DSQ"]
+                if valid_prog:
+                    program_db = Program(
+                        type=seg,
+                        withdrawn=program["Rank"] == "WD",
+                        disqualified=program["Rank"] == "DSQ",
+                        total_element_score=program["TES"],
+                        total_component_score=program["PCS"],
+                        total_deductions=program["Ded."],
+                        total_segment_score=program["TSS"],
+                        composition=program["CO"],
+                        presentation=program["PR"],
+                        skating_skills=program["SK"],
+                        rank=program["Rank"],
+                        bonifications=0.0,
+                        starting_number=program["StN."],
+                    )
+
+                else:
+                    program_db = Program(
+                        type=seg,
+                        withdrawn=program["Rank"] == "WD",
+                        disqualified=program["Rank"] == "DSQ",
+                        total_element_score=None,
+                        total_component_score=None,
+                        total_deductions=None,
+                        total_segment_score=None,
+                        composition=None,
+                        presentation=None,
+                        skating_skills=None,
+                        rank=None,
+                        bonifications=None,
+                        starting_number=program["StN."],
+                    )
+
+                programs.append(program_db)
+                performance.short_program = program_db if seg == "SP" else None
+                performance.free_skating = program_db if seg == "FS" else None
+                performances.append(performance)
+
+    db.add_all(programs)
     db.add_all(performances)
     db.commit()
 
