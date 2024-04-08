@@ -71,13 +71,17 @@ def get_category_entries(url: str) -> Optional[pd.DataFrame]:
     headers = [cell.text.strip() for cell in rows[0].find_all("th")]
     for r in rows[1:]:
         cells = r.find_all("td")
-        full_name = cells[1].text.strip()
+        full_name = " ".join(
+            filter(lambda w: w != "", cells[1].text.strip().split(" "))
+        )  # Remove double spaces
         if full_name == "":
             continue
-        surname = " ".join(list(filter(lambda w: w.isupper(), full_name.split(" "))))
+        surname = " ".join(
+            list(filter(lambda w: w.isupper(), full_name.split(" ")))
+        ).strip()
         first_name = " ".join(
             list(filter(lambda w: not w.isupper(), full_name.split(" ")))
-        )
+        ).strip()
         if "Club" in headers:
             club = cells[2].text.strip()
             nationality = cells[3].text.strip()
@@ -130,11 +134,9 @@ def get_category_results(url: str) -> Optional[pd.DataFrame]:
     if soup is None:
         return None
 
-    df = pd.DataFrame(
-        columns=["FinalRank", "Name", "Club", "Nation", "Score", "SP", "FS"]
-    )
+    df = pd.DataFrame(columns=["FinalRank", "Name", "Club", "Nation", "Score"])
     table = None
-    header = "\n\n \xa0 FPl."
+    header = "\n\nFPl."
     tables = soup.find_all("table")
     while len(tables) > 0 and table is None:
         t = tables.pop(0)
@@ -146,36 +148,28 @@ def get_category_results(url: str) -> Optional[pd.DataFrame]:
         return None
 
     rows = table.find_all("tr")  # type: ignore
-    headers = [cell.text.strip() for cell in rows[0].find_all("th")]
-    if len(headers) == 7:
-        has_sp = True
-    else:
-        has_sp = False
     for r in rows[1:]:
         cells = r.find_all("td")
-        if len(cells) == 0:
+        if len(cells) < 8:
             continue
         final_rank = cells[0].text.strip()
-        name = cells[1].text.strip()
+        name = " ".join(
+            filter(lambda w: w != "", cells[1].text.strip().split(" "))
+        )  # Remove double spaces
         club = cells[2].text.strip()
-        nation = cells[3].text.strip()
+        nation = cells[6].text.strip()
         if final_rank in ["WD", "DSQ"]:
             score = 0.0
-            sp = 0
-            fs = 0
         else:
-            score = float(cells[4].text.strip())
-            sp = int(cells[5].text.strip()) if has_sp else 0
-            fs = int(cells[6].text.strip()) if has_sp else int(cells[5].text.strip())
+            score = float(cells[7].text.strip())
         df.loc[len(df.index)] = [  # type: ignore
             final_rank,
             name,
             club,
             nation,
             score,
-            sp,
-            fs,
         ]
+    return df
 
 
 def get_program_detailed_results(url: str) -> Optional[pd.DataFrame]:
@@ -218,7 +212,9 @@ def get_program_detailed_results(url: str) -> Optional[pd.DataFrame]:
         if len(cells) == 0:
             continue
         rank = cells[0].text.strip()
-        name = cells[1].text.strip()
+        name = name = " ".join(
+            filter(lambda w: w != "", cells[1].text.strip().split(" "))
+        )  # Remove double spaces
         club = cells[2].text.strip()
         nation = cells[3].text.strip()
         if rank in ["WD", "DSQ"]:
@@ -370,6 +366,9 @@ def parse_category_level(
         "Adulte Argent",
         "Adulte Or",
         "Adulte Masters",
+        "D1",
+        "D2",
+        "D3",
     ]:
         regex = re.compile(f"{level}", re.IGNORECASE)
         if regex.match(name):

@@ -69,4 +69,4 @@ def initialize_competitions(rebuild_all: bool = False):
 
 
 if __name__ == "__main__":
-    initialize_competitions(rebuild_all=True)
+    initialize_competitions(rebuild_all=False)

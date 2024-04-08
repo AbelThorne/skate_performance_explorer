@@ -4,7 +4,7 @@ from config import settings
 
 # connect_args = {"check_same_thread": False}
 connect_args = {}
-engine = create_engine(settings.DATABASE_URI, echo=True, connect_args=connect_args)
+engine = create_engine(settings.DATABASE_URI, echo=False, connect_args=connect_args)
 
 
 def drop_db_and_tables():

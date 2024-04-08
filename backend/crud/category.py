@@ -186,6 +186,7 @@ def create_category_from_crawler(
                     query=select(Skater).where(
                         Skater.first_name == entry["First Name"],
                         Skater.last_name == entry["Surname"],
+                        Skater.club_id == club_db.id,
                     ),
                     skater=SkaterCreate(
                         first_name=entry["First Name"],
@@ -211,11 +212,18 @@ def create_category_from_crawler(
             logger.warning(f"Could not get results for {crawled['name']}")
         else:
             performances = []
+            nb_valid_entries = len(df_perfs.query("FinalRank not in ['WD', 'DSQ']"))
             for _, perf in df_perfs.iterrows():
                 skater = db.exec(
-                    select(Skater).where(
+                    select(Skater)
+                    .where(
                         F.concat(Skater.first_name, " ", Skater.last_name)
                         == perf["Name"]
+                    )
+                    .where(
+                        col(Skater.club_id).in_(
+                            select(Club.id).where(Club.abbrev == perf["Club"])
+                        )
                     )
                 ).first()
                 if skater is None:
@@ -223,19 +231,35 @@ def create_category_from_crawler(
                         f"Could not find skater {perf['Name']} in the database"
                     )
                     continue
-                performances.append(
-                    Performance(
-                        skater_id=skater.id,
-                        skater=skater,
-                        category_id=category_to_db.id,
-                        category=category_to_db,
-                        withdrawn=perf["Rank"] == "WD",
-                        disqualified=perf["Rank"] == "DSQ",
-                        rank=perf["FinalRank"],
-                        score=perf["Score"],
-                        total_entries=len(category_to_db.entries),
+                valid_perf = perf["FinalRank"] not in ["WD", "DSQ"]
+                if valid_perf:
+                    performances.append(
+                        Performance(
+                            skater_id=skater.id,
+                            skater=skater,
+                            category_id=category_to_db.id,
+                            category=category_to_db,
+                            withdrawn=perf["FinalRank"] == "WD",
+                            disqualified=perf["FinalRank"] == "DSQ",
+                            rank=perf["FinalRank"],
+                            score=perf["Score"],
+                            total_entries=nb_valid_entries,
+                        )
                     )
-                )
+                else:
+                    performances.append(
+                        Performance(
+                            skater_id=skater.id,
+                            skater=skater,
+                            category_id=category_to_db.id,
+                            category=category_to_db,
+                            withdrawn=perf["FinalRank"] == "WD",
+                            disqualified=perf["FinalRank"] == "DSQ",
+                            rank=None,
+                            score=None,
+                            total_entries=nb_valid_entries,
+                        )
+                    )
             db.add_all(performances)
             db.commit()
 
@@ -246,19 +270,31 @@ def create_category_from_crawler(
     for seg, segment_obj in segment.items():
         if segment_obj["details"] is None:
             continue
-        df_perfs = get_program_detailed_results(segment_obj["details"])
-        if df_perfs is None:
+        df_progs = get_program_detailed_results(segment_obj["details"])
+        if df_progs is None:
             logger.warning(
                 f"Could not get detailed results for {seg} of {crawled['name']}"
             )
         else:
-            for _, program in df_perfs.iterrows():
+            for _, program in df_progs.iterrows():
                 performance = db.exec(
-                    select(Performance).where(
+                    select(Performance)
+                    .where(
+                        Performance.category_id == category_to_db.id,
+                    )
+                    .where(
                         col(Performance.skater_id).in_(
-                            select(Skater.id).where(
+                            select(Skater.id)
+                            .where(
                                 F.concat(Skater.first_name, " ", Skater.last_name)
                                 == program["Name"]
+                            )
+                            .where(
+                                col(Skater.club_id).in_(
+                                    select(Club.id).where(
+                                        Club.abbrev == program["Club"]
+                                    )
+                                )
                             )
                         )
                     )

@@ -1,0 +1,46 @@
+season: 2022-2023
+circuits:
+  - name: Ligue Occitanie
+    competitions:
+      - name: Trophée des Violettes
+        type: CR
+        start: 2022-10-22
+        end: 2022-10-23
+        location: Toulouse
+        rink_name: Patinoire Alex Jany
+        url: http://isujs.so.free.fr/Resultats/Resultats-2022-2023/CSNPA-VIOLETTES/index.htm
+      - name: Coupe Gérard Prido
+        type: TF
+        start: 2022-11-19
+        end: 2022-11-20
+        location: Font-Romeu
+        rink_name: Patinoire Philippe Candeloro
+        url: http://isujs.so.free.fr/Resultats/Resultats-2022-2023/TF-PRIDO/index.htm
+      - name: Coupe des Costières
+        type: CR
+        start: 2023-01-21
+        end: 2022-02-22
+        location: Nîmes
+        rink_name: Patinoire Municipale
+        url: http://isujs.so.free.fr/Resultats/Resultats-2022-2023/Coupe-Costieres/index.htm
+      - name: Trophée du Soleil
+        type: CR
+        start: 2023-03-25
+        end: 2023-03-26
+        location: Montpellier
+        rink_name: Patinoire Vegapolis
+        url: http://isujs.so.free.fr/Resultats/Resultats-2022-2023/Trophee-Montpellier/index.htm
+      - name: Trophée de la Ville de Blagnac - Championnat de Ligue
+        type: CdL
+        start: 2023-04-15
+        end: 2023-04-16
+        location: Blagnac
+        rink_name: Patinoire Jacques Raynaud
+        url: http://isujs.so.free.fr/Resultats/Resultats-2022-2023/Trophee-Blagnac-2023/index.htm
+      - name: Coupe de l'Espace
+        type: CR
+        start: 2024-05-20
+        end: 2024-05-21
+        location: Narbonne
+        rink_name: Patinoire de l'Espace de Liberté
+        url: http://isujs.so.free.fr/Resultats/Resultats-2022-2023/Coupe-Espace-2023/
